@@ -1,0 +1,16 @@
+# Python/Django
+__pycache__/
+*.py[cod]
+*$py.class
+*.env
+media/blogs/
+media/profiles/
+
+# Node/React
+node_modules/
+dist/
+.DS_Store
+
+# Local IDE
+.vscode/
+.idea/

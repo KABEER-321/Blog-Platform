@@ -39,8 +39,14 @@ api.interceptors.response.use(
 
     // Handle Expired JWT Tokens (401 Unauthorized)
     if (error.response.status === 401 && !originalRequest._retry) {
+      // Do not intercept 401s for token endpoints (e.g. login credentials check)
+      if (originalRequest.url && originalRequest.url.includes('token/')) {
+        return Promise.reject(error);
+      }
+
       originalRequest._retry = true;
       const refreshToken = localStorage.getItem('refresh_token');
+      const isLoginPath = window.location.pathname === '/login';
 
       if (refreshToken) {
         try {
@@ -59,14 +65,18 @@ api.interceptors.response.use(
           localStorage.removeItem('access_token');
           localStorage.removeItem('refresh_token');
           localStorage.removeItem('user');
-          window.location.href = '/login';
+          if (!isLoginPath) {
+            window.location.href = '/login';
+          }
           return Promise.reject(refreshError);
         }
       } else {
         localStorage.removeItem('access_token');
         localStorage.removeItem('refresh_token');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        if (!isLoginPath) {
+          window.location.href = '/login';
+        }
       }
     }
 
